@@ -19,6 +19,7 @@
 
     <modules>
         <module>thinking-in-java</module>
+        <module>lite-junit</module>
     </modules>
 
 
