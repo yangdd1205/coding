@@ -88,10 +88,10 @@ public class Tester<C> {
         for (TestParam param : paramList) {
             System.out.format(sizeField, param.size);
             for (Test<C> test : tests) {
-                C containter = initialize(param.size);
+                C kontainter = initialize(param.size);
                 long start = System.nanoTime();
                 // Call the overriden method:
-                int reps = test.test(container, param);
+                int reps = test.test(kontainter, param);
                 long duration = System.nanoTime();
                 long timePerReq = duration / reps;
                 System.out.format(numberField(), timePerReq);
