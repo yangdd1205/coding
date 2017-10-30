@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>shiro-chapter02</artifactId>
+    <artifactId>shiro-chapter02-authentication</artifactId>
 
     <dependencies>
         <dependency>
