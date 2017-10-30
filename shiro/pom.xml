@@ -12,7 +12,8 @@
     <artifactId>shiro</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>shiro-chapter02</module>
+        <module>shiro-chapter02-authentication</module>
+        <module>shiro-chapter03-authorization</module>
     </modules>
 
 </project>
