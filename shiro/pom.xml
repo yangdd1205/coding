@@ -15,6 +15,7 @@
         <module>shiro-chapter02-authentication</module>
         <module>shiro-chapter03-authorization</module>
         <module>shiro-chapter04-ini</module>
+        <module>shiro-chapter05-cryptography</module>
     </modules>
 
 </project>
