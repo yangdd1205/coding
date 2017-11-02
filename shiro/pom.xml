@@ -17,6 +17,7 @@
         <module>shiro-chapter04-ini</module>
         <module>shiro-chapter05-cryptography</module>
         <module>shiro-chapter06-realm</module>
+        <module>shiro-chapter07-web</module>
     </modules>
 
 </project>
