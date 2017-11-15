@@ -18,6 +18,7 @@
         <module>shiro-chapter05-cryptography</module>
         <module>shiro-chapter06-realm</module>
         <module>shiro-chapter07-web</module>
+        <module>shiro-chapter08-filter</module>
     </modules>
 
 </project>
