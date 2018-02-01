@@ -1,0 +1,1 @@
+该模块中的代码来源于 [Netty 4.x User Guide 中文翻译《Netty 4.x 用户指南》](https://waylau.com/netty-4-user-guide/)
