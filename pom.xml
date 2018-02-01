@@ -22,6 +22,7 @@
         <module>lite-junit</module>
         <module>activemq</module>
         <module>shiro</module>
+        <module>netty</module>
     </modules>
 
 
