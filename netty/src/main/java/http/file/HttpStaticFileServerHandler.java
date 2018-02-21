@@ -7,9 +7,12 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
+import io.netty.util.internal.SystemPropertyUtil;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -31,6 +34,27 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();
         ctx.close();
+    }
+
+    private static final Pattern INSECURE_URI = Pattern.compile(".*[<>&\\\"].*");
+
+    private static String sanitizeUri(String uri) {
+        try {
+            uri = URLDecoder.decode(uri, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new Error(e);
+        }
+
+        if (uri.isEmpty() || uri.charAt(0) != '/') {
+            return null;
+        }
+        uri = uri.replace('/', File.separatorChar);
+
+        if (uri.contains(File.separator + '.') || uri.contains('.' + File.separator) || uri.charAt(0) == '.' || uri.charAt(uri.length() - 1) == '.' || INSECURE_URI.matcher(uri).matches()) {
+            return null;
+        }
+        return SystemPropertyUtil.get("user.dir") + File.separator + uri;
+
     }
 
     private static final Pattern ALLOWED_FILE_NAME = Pattern.compile("[^-\\._]?[^<>&\\\"]*");
