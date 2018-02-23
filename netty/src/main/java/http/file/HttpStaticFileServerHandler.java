@@ -11,6 +11,8 @@ import io.netty.util.internal.SystemPropertyUtil;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
@@ -26,14 +28,80 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
         if (!request.getDecoderResult().isSuccess()) {
-
+            sendError(ctx, HttpResponseStatus.BAD_REQUEST);
+            return;
         }
+
+        if (request.getMethod() != HttpMethod.GET) {
+            sendError(ctx, HttpResponseStatus.METHOD_NOT_ALLOWED);
+            return;
+        }
+        final String uri = request.getUri();
+        final String path = sanitizeUri(uri);
+        if (path == null) {
+            sendError(ctx, HttpResponseStatus.FORBIDDEN);
+            return;
+        }
+        File file = new File(path);
+        if (file.isHidden() || !file.exists()) {
+            sendError(ctx, HttpResponseStatus.NOT_FOUND);
+            return;
+        }
+
+        if (file.isDirectory()) {
+            if (uri.endsWith("/")) {
+                sendListing(ctx, file, uri);
+            } else {
+                sendRedirect(ctx, uri + "/");
+            }
+            return;
+        }
+
+        if (!file.isFile()) {
+            sendError(ctx, HttpResponseStatus.FORBIDDEN);
+            return;
+        }
+
+        String ifModifiedSince = request.headers().get(HttpHeaders.Names.IF_MODIFIED_SINCE);
+        if (Objects.nonNull(ifModifiedSince) && !ifModifiedSince.isEmpty()) {
+            SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
+            Date ifModifiedSinceDate = dateFormatter.parse(ifModifiedSince);
+
+            long ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime() / 1000;
+            long fileLastModifiedSeconds = file.lastModified() / 1000;
+            if (ifModifiedSinceDateSeconds == fileLastModifiedSeconds) {
+                sendNotModified(ctx);
+                return;
+            }
+        }
+
+        RandomAccessFile raf;
+        try {
+            raf = new RandomAccessFile(file,"r");
+        }catch (FileNotFoundException ignore){
+            sendError(ctx,HttpResponseStatus.NOT_FOUND);
+            return;
+        }
+
+        long fileLength = raf.length();
+        HttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+        HttpHeaders.setContentLength(response,fileLength);
+        setContentTypeHeader(response,file);
+        setDateAndCacheHeaders(response,file);
+        if (HttpHeaders.isKeepAlive(request)) {
+            response.headers().set(HttpHeaders.Names.CONNECTION,HttpHeaders.Values.KEEP_ALIVE);
+        }
+        ctx.write(response);
+
+        //TODO Write the content.
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();
-        ctx.close();
+        if (ctx.channel().isActive()) {
+            sendError(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     private static final Pattern INSECURE_URI = Pattern.compile(".*[<>&\\\"].*");
