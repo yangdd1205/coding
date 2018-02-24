@@ -2,10 +2,10 @@ package http.file;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
 import io.netty.handler.codec.http.*;
+import io.netty.handler.ssl.SslHandler;
+import io.netty.handler.stream.ChunkedFile;
 import io.netty.util.CharsetUtil;
 import io.netty.util.internal.SystemPropertyUtil;
 
@@ -77,23 +77,52 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
 
         RandomAccessFile raf;
         try {
-            raf = new RandomAccessFile(file,"r");
-        }catch (FileNotFoundException ignore){
-            sendError(ctx,HttpResponseStatus.NOT_FOUND);
+            raf = new RandomAccessFile(file, "r");
+        } catch (FileNotFoundException ignore) {
+            sendError(ctx, HttpResponseStatus.NOT_FOUND);
             return;
         }
 
         long fileLength = raf.length();
         HttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-        HttpHeaders.setContentLength(response,fileLength);
-        setContentTypeHeader(response,file);
-        setDateAndCacheHeaders(response,file);
+        HttpHeaders.setContentLength(response, fileLength);
+        setContentTypeHeader(response, file);
+        setDateAndCacheHeaders(response, file);
         if (HttpHeaders.isKeepAlive(request)) {
-            response.headers().set(HttpHeaders.Names.CONNECTION,HttpHeaders.Values.KEEP_ALIVE);
+            response.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
         }
         ctx.write(response);
 
-        //TODO Write the content.
+        // Write the content.
+        ChannelFuture sendFileFuture;
+        ChannelFuture lastConnectionFuture;
+
+        if (ctx.pipeline().get(SslHandler.class) == null) {
+            sendFileFuture = ctx.write(new DefaultFileRegion(raf.getChannel(), 0, fileLength), ctx.newProgressivePromise());
+            lastConnectionFuture = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
+        } else {
+            sendFileFuture = ctx.writeAndFlush(new HttpChunkedInput(new ChunkedFile(raf, 0, fileLength, 8192)), ctx.newProgressivePromise());
+            lastConnectionFuture = sendFileFuture;
+        }
+        sendFileFuture.addListener(new ChannelProgressiveFutureListener() {
+            @Override
+            public void operationProgressed(ChannelProgressiveFuture future, long progress, long total) throws Exception {
+                if (total < 0) {
+                    System.err.println(future.channel() + " Transfer progress: " + progress);
+                } else {
+                    System.err.println(future.channel() + " Transfer progress: " + progress + " / " + total);
+                }
+            }
+
+            @Override
+            public void operationComplete(ChannelProgressiveFuture future) throws Exception {
+                System.err.println(future.channel() + " Transfer complete.");
+            }
+        });
+
+        if (!HttpHeaders.isKeepAlive(request)) {
+            lastConnectionFuture.addListener(ChannelFutureListener.CLOSE);
+        }
     }
 
     @Override
