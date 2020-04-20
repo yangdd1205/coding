@@ -21,8 +21,8 @@
         <module>thinking-in-java</module>
         <module>lite-junit</module>
         <module>activemq</module>
-        <module>shiro</module>
         <module>netty</module>
+        <module>thinking-in-spring</module>
     </modules>
 
 
