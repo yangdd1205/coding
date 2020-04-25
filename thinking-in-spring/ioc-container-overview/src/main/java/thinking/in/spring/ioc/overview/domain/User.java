@@ -34,4 +34,17 @@ public class User {
                 ", name='" + name + '\'' +
                 '}';
     }
+
+
+    /**
+     * 通过静态方式创建对象
+     *
+     * @return
+     */
+    public static User createUser() {
+        User user = new User();
+        user.setId(1L);
+        user.setName("杨");
+        return user;
+    }
 }
