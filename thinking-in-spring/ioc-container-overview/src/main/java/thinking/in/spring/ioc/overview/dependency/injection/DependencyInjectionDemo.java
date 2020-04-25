@@ -2,7 +2,6 @@ package thinking.in.spring.ioc.overview.dependency.injection;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.env.Environment;
 import thinking.in.spring.ioc.overview.repository.UserRepository;
@@ -15,7 +14,7 @@ public class DependencyInjectionDemo {
     public static void main(String[] args) {
 
 
-        BeanFactory beanFactory = new ClassPathXmlApplicationContext("classpath:/MATE-INF/dependency-injection-context.xml");
+        BeanFactory beanFactory = new ClassPathXmlApplicationContext("classpath:/META-INF/dependency-injection-context.xml");
 
         //依赖来源一： 自定义 Bean
         UserRepository userRepository = beanFactory.getBean("userRepository", UserRepository.class);
