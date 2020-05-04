@@ -9,6 +9,17 @@
     <bean id="user" class="thinking.in.spring.ioc.overview.domain.User">
         <property name="id" value="1"/>
         <property name="name" value="杨"/>
+        <property name="city" value="SHANGHAI"/>
+        <property name="workCities" value="HANGZHOU,SHANGHAI"/>
+<!--        <property name="lifeCities" value="HANGZHOU,SHANGHAI,BEIJING"/>-->
+        <property name="lifeCities">
+            <list>
+                <value>BEIJING</value>
+                <value>SHANGHAI</value>
+                <value>HANGZHOU</value>
+            </list>
+        </property>
+        <property name="configFileLocation" value="classpath:/META-INF/user-config.properties"/>
     </bean>
     <bean id="superUser" class="thinking.in.spring.ioc.overview.domain.SuperUser" parent="user" primary="true">
         <property name="address" value="上海"/>
