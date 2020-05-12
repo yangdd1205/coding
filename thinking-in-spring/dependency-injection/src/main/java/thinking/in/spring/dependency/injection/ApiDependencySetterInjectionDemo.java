@@ -19,7 +19,7 @@ public class ApiDependencySetterInjectionDemo {
 
         // 注册 UserHolder 的 BeanDefinition
         BeanDefinition userHolderBeanDefinition = createUserHolderBeanDefinition();
-        applicationContext.registerBeanDefinition("userHolder",userHolderBeanDefinition);
+        applicationContext.registerBeanDefinition("userHolder", userHolderBeanDefinition);
 
         XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(applicationContext);
 
@@ -42,17 +42,12 @@ public class ApiDependencySetterInjectionDemo {
     }
 
 
-    private static BeanDefinition createUserHolderBeanDefinition(){
+    private static BeanDefinition createUserHolderBeanDefinition() {
         BeanDefinitionBuilder definitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(UserHolder.class);
-        definitionBuilder.addPropertyReference("user","superUser");
+        definitionBuilder.addPropertyReference("user", "superUser");
         return definitionBuilder.getBeanDefinition();
     }
 
-//    @Bean
-//    public UserHolder userHolder(User user) {
-//
-//        return new UserHolder(user);
-//    }
 }
 
 

@@ -45,11 +45,6 @@ public class ApiDependencyConstructorInjectionDemo {
         return definitionBuilder.getBeanDefinition();
     }
 
-//    @Bean
-//    public UserHolder userHolder(User user) {
-//
-//        return new UserHolder(user);
-//    }
 }
 
 
