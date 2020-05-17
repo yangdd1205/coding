@@ -5,7 +5,9 @@
 
 
 
-
+    <!-- Root BeanDefinition 不需要合并，不存在 parent -->
+    <!-- 也是一个普通的 BeanDefinition GenericBeanDefinition-->
+    <!-- 合并后变成 Root BeanDefinition -->
     <bean id="user" class="thinking.in.spring.ioc.overview.domain.User">
         <property name="id" value="1"/>
         <property name="name" value="杨"/>
@@ -21,6 +23,9 @@
         </property>
         <property name="configFileLocation" value="classpath:/META-INF/user-config.properties"/>
     </bean>
+    <!-- 普通的 BeanDefinition GenericBeanDefinition-->
+    <!-- 合并后变成 Root BeanDefinition 并且覆盖 parent 相关配置 -->
+    <!-- 增加 primary=true，address-->
     <bean id="superUser" class="thinking.in.spring.ioc.overview.domain.SuperUser" parent="user" primary="true">
         <property name="address" value="上海"/>
     </bean>
