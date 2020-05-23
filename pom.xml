@@ -23,6 +23,7 @@
         <module>activemq</module>
         <module>netty</module>
         <module>thinking-in-spring</module>
+        <module>monitor-agent</module>
     </modules>
 
 
