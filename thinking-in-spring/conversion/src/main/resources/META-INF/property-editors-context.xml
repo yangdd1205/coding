@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util.xsd">
+
+
+    <!-- 通过 propertyEditor  实现类型转换 -->
+    <bean class="thinking.in.spring.conversion.CustomizedPropertyEditorRegistrar"/>
+
+    <!-- 通过 conversionService  实现类型转换 -->
+    <bean id="propertiesToStringConverter" class="thinking.in.spring.conversion.PropertiesToStringConverter"/>
+
+    <!-- 声明 ConversionServiceFactoryBean 并且名称必须为 conversionService-->
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters" ref="propertiesToStringConverter"/>
+    </bean>
+
+    <util:properties id="context">
+        <prop key="id">1</prop>
+        <prop key="name">杨</prop>
+    </util:properties>
+
+    <bean id="user" class="thinking.in.spring.ioc.overview.domain.User">
+        <property name="id" value="1"/>
+        <property name="name" value="杨"/>
+        <property name="context">
+            <value>
+                id=1
+                name=杨
+            </value>
+        </property>
+        <property name="contextAsText" ref="context"/>
+    </bean>
+</beans>
+
+
+
