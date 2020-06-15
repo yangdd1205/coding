@@ -24,6 +24,7 @@
         <module>netty</module>
         <module>thinking-in-spring</module>
         <module>monitor-agent</module>
+        <module>rocketmq-in-action</module>
     </modules>
 
 
