@@ -1,0 +1,1 @@
+org.springframework.context.ApplicationContextInitializer=thinking.in.spring.boot.ioc.ApplicationContextInitializerDemo3
