@@ -56,6 +56,6 @@ public class InjectingApplicationEventPublisherDemo implements ApplicationEventP
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException { // #2
-        applicationEventPublisher.publishEvent(new MySpringEvent("The event from ApplicationContextAware"));
+        applicationContext.publishEvent(new MySpringEvent("The event from ApplicationContextAware"));
     }
 }
