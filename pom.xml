@@ -26,6 +26,7 @@
         <module>monitor-agent</module>
         <module>rocketmq-in-action</module>
         <module>thinking-in-spring-boot</module>
+        <module>delay-task</module>
     </modules>
 
 
